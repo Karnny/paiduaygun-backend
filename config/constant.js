@@ -7,8 +7,14 @@ exports.USER_ROLE = {
     }
 }
 
-exports.MULTIPART_IMAGE_UPLOAD_FIELD_NAME= {
-    REGISTER_IMAGE: 'REGISTER_IMAGE'
-    // Define multer image field here
+exports.MULTIPART_IMAGE_UPLOAD_FIELDS = {
+    REGISTER_IMAGES: [
+        {
+            name: 'driverlicense', maxCount: 1
+        },
+        {
+            name: 'idcard', maxCount: 1
+        }
+    ]
 }
 

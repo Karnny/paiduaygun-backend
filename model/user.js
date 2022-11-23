@@ -19,7 +19,13 @@ exports.createUser = async ({
       driverlicense,
 }) => {
     const hashPassword = bcrypt.hashSync(password , 10);
-    const sql = "INSERT INTO users (users.user_username , users.user_password , users.user_firstname , users.user_lastname , users.user_gender , users.user_age , users.user_email , users.user_phonenum , users.user_othercon , users.user_address , users.user_latitude , users.user_longtitude , users.user_idcard , users.user_driverlecence , users.user_isban , users.user_role) VALUES (? , ? , ? , ? , ? , ? , ? , ? , ? , ? , lati , long , ? , ? , 1 , 2)"
+    const sql = `INSERT INTO users 
+    (users.user_username , users.user_password , users.user_firstname , users.user_lastname , 
+    users.user_gender , users.user_age , users.user_email , users.user_phonenum , 
+    users.user_othercon , users.user_address , users.user_latitude , 
+    users.user_longtitude , users.user_idcard , users.user_driverlicense , 
+    users.user_isban , users.user_role) 
+    VALUES (? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , 1 , 2)`
 
     const [createUserResult] = await db.query(sql , [
         username,
@@ -37,6 +43,7 @@ exports.createUser = async ({
         idcard,
         driverlicense,
     ]);
+    
     return createUserResult;
 }
 
