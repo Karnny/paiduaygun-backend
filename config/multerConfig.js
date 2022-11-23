@@ -3,9 +3,9 @@ const path = require('path');
 const multer = require('multer');
 const { v1: uuidv1 } = require('uuid');
 
-const profileImageStorage = multer.diskStorage({
+const credentialImageStorage = multer.diskStorage({
     destination: (req, file, cb) => {
-        const photosDestination = path.join(__dirname, '../public/photos/profile');
+        const photosDestination = path.join(__dirname, '../public/photos/credential');
         cb(null, photosDestination);
     },
     filename: (req, file, cb) => {
@@ -13,15 +13,6 @@ const profileImageStorage = multer.diskStorage({
     }
 });
 
-const itemImageStorage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        const photosDestination = path.join(__dirname, '../public/photos/item');
-        cb(null, photosDestination);
-    },
-    filename: (req, file, cb) => {
-        cb(null, uuidv1() + path.extname(file.originalname));
-    }
-});
 
 const fileFilterHandler = (req, file, cb) => {
     const allowedFileExtension = /jpeg|jpg|png|gif/;
@@ -35,26 +26,19 @@ const fileFilterHandler = (req, file, cb) => {
     }
 }
 
-const handleProfileImageUpload = multer({
-    storage: profileImageStorage,
+const handleCredentialImageUpload = multer({
+    storage: credentialImageStorage,
     limits: {
         fileSize: 15000000 // limit file size to 15 MB
     },
     fileFilter: fileFilterHandler
 });
 
-const handleItemImageUpload = multer({
-    storage: itemImageStorage,
-    limits: {
-        fileSize: 15000000 // limit file size to 15 MB
-    },
-    fileFilter: fileFilterHandler
-});
+
 
 module.exports = {
     multer,
-    profileImageStorage,
-    itemImageStorage,
-    handleProfileImageUpload,
-    handleItemImageUpload
+    credentialImageStorage,
+    handleCredentialImageUpload,
+
 }

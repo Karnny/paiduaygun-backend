@@ -3,7 +3,8 @@ const api = express.Router();
 
 // ==== API routes binding ====
 // api.use(require('./auth'));
-
+api.use(require('./ride'));
+api.use(require('./user'));
 
 
 
