@@ -110,13 +110,21 @@ exports.confirmTrip = async ({choiceStatus , tripID}) => {
 // History From Booking
 exports.getHistoryBooking = async ({ id }) => {
     const sql = 'SELECT ride.ride_origin , ride.ride_destination , ride.ride_origindatetime , ride.ride_destinationdatetime, ride.ride_passenger , ride.ride_nowhaspass , ride.ride_status , ride.ride_priceperpass FROM ride JOIN user_have_trip ON ride.ride_id = user_have_trip.trip_ride_id AND user_have_trip.trip_user_id = ?'
-    const resultHistoryBooking = await db.query(sql, id);
+    const [resultHistoryBooking] = await db.query(sql, id);
     return resultHistoryBooking;
 }
 
 // History From Riding
 exports.getHistoryRiding = async ({ id }) => {
     const sql = 'SELECT * FROM ride WHERE ride.rider_user_id = ?'
-    const resultHistoryRiding = await db.query(sql, id);
+    const [resultHistoryRiding] = await db.query(sql, id);
     return resultHistoryRiding;
 }
+
+// Search Filter
+exports.showRidebySearch = async ({from , to , date , person = 1 , gender , agemin , agemax = 20 , pricemin = 22 , pricemax}) => {
+    const sql = 'SELECT users.user_firstname, users.user_lastname, users.user_rate, users.user_gender, users.user_age, ride.ride_origin, ride.ride_destination, ride.ride_origindatetime, ride.ride_destinationdatetime, ride.ride_passenger, ride.ride_nowhaspass, ride.ride_priceperpass,ride.ride_orginin_latitude , ride.ride_orginin_longtitude , (ride.ride_passenger - ride.ride_nowhaspass) AS "seat_available" FROM ride JOIN users ON ride.rider_user_id = users.user_id AND ride.ride_status = 1 WHERE ((ride.ride_origin LIKE ? OR ride.ride_destination LIKE ?)OR DATE(ride.ride_origindatetime) = NULL OR users.user_gender = NULL) OR( users.user_age BETWEEN ? AND ? AND ride.ride_priceperpass BETWEEN ? AND ?) AND ( ride.ride_passenger - ride.ride_nowhaspass) >= ?'
+    const [resultRidebySearch] = await db.query(sql , [`%${from}%` , `%${to}%` ,date , gender , agemin , agemax , pricemin , pricemax , person]);
+    return resultRidebySearch;
+}
+

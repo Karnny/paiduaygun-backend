@@ -20,6 +20,26 @@ exports.showRide = async (_req, res) => {
     res.json(await ride.allTrip())
 }
 
+exports.showRidebySearch = async (req , res) => {
+    const {from , to , date , person, gender , agemin , agemax , pricemin , pricemax , lat , lon} = req.query;
+    const getshowRidebySearch = await ride.showRidebySearch({from: from , to: to , date: date , person: person , gender : gender , agemin: agemin , agemax: agemax , pricemin: pricemin , pricemax: pricemax});
+    const nearbyfilter = getshowRidebySearch.filter(row => {
+        const lat1 = Number(row.ride_orginin_latitude) * Math.PI / 180;
+        const lon1 = Number(row.ride_orginin_longtitude) * Math.PI / 180;
+        const lat2 = Number(lat) * Math.PI / 180;
+        const lon2 = Number(lon) * Math.PI / 180;
+
+        let dlon = lon2 - lon1;
+        let dlat = lat2 - lat1;
+        let a = Math.pow(Math.sin(dlat / 2), 2) + Math.cos(lat1) * Math.cos(lat2) * Math.pow(Math.sin(dlon / 2),2);
+        let c = 2 * Math.asin(Math.sqrt(a));
+        let r = 6371;
+        let MaxnearbyDistance = 30
+        return (c * r) <= MaxnearbyDistance;
+    });
+    res.json(nearbyfilter);
+}
+
 exports.bookingTrip = async (req, res) => {
     const bookingRide = await ride.bookTrip(req.body);
     if (bookingRide.affectedRows != 1) {
