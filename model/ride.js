@@ -1,5 +1,6 @@
 const { mysql, mysqlConnection: db } = require('../config/mysqlConfig');
 
+// Users Add New Ride to System
 exports.createRide = async ({
     origin,
     destination,
@@ -62,17 +63,45 @@ exports.allTrip = async () => {
 }
 
 // Show Detail of Ride
-exports.getDetailRide = async ({rideID}) => {
-    const sql = 'SELECT ride.ride_nowhaspass,ride.ride_origindatetime,ride.ride_destination_latitude,ride.ride_origin,ride.ride_destination,ride.ride_licensecar,ride.ride_trunkspace,ride.ride_seatnum,ride.ride_babysetnum,ride.ride_pet,ride.ride_music,ride.ride_smoke,ride.ride_otherdetail,users.user_firstname,users.user_lastname,users.user_gender,users.user_age,users.user_email,users.user_othercon,users.user_rate,ride.ride_priceperpass,ride.ride_pickup,users.user_firstname AS firstname_haveTrip ,users.user_lastname AS lastname_haveTrip, users.user_age AS age_haveTripFROM ride JOIN usersON ride.rider_user_id = users.user_idJOIN user_have_trip ON user_have_trip.trip_user_id = users.user_id WHERE ride_id=?';
-    const [resultDetailRide] = await db.query(sql,[rideID]);
+exports.getDetailRide = async ({tripID}) => {
+    const sql = 'SELECT ride.ride_origin , ride.ride_destination , ride.ride_pickup , ride.ride_origindatetime , ride.ride_destinationdatetime , ride.ride_car_id , ride.ride_licensecar , ride.ride_trunkspace , ride.ride_seatnum , ride.ride_babysetnum , ride.ride_pet , ride.ride_music , ride_smoke , ride.ride_otherdetail , ride.ride_passenger , ride.ride_nowhaspass , ride.ride_priceperpass , ride.ride_status , ow.user_firstname , ow.user_lastname , ow.user_gender , ow.user_age , ow.user_rate , ow.user_othercon , ow.user_email , ow.user_phonenum , tp.user_firstname , tp.user_lastname , tp.user_gender , tp.user_age  FROM ride JOIN users ow ON ride.rider_user_id = ow.user_id JOIN user_have_trip ON user_have_trip.trip_ride_id = ride.ride_id JOIN users tp ON user_have_trip.trip_user_id = tp.user_id AND user_have_trip.trip_ride_id = ?';
+    const [resultDetailRide] = await db.query(sql,[tripID]);
+    // console.log(tripID);
     return resultDetailRide;
 } 
 
 // Book This Ride
-exports.bookRide = async ({userBookID , tripID}) => {
-    const sql = 'INSERT INTO user_have_trip(user_have_trip.trip_bookingstatus , user_have_trip.trip_paymentstatus , user_have_trip.trip_user_id , user_have_trip.trip_ride_id) VALUES (1 , 1 , ? , ?)'
-    const [bookingResult] = await db.query(sql , [userBookID , tripID]);
+exports.bookTrip = async ({userBookID , rideID}) => {
+    const sql = 'INSERT INTO user_have_trip(user_have_trip.trip_bookingstatus , user_have_trip.trip_paymentstatus , user_have_trip.trpibooking_datetime , user_have_trip.trip_user_id , user_have_trip.trip_ride_id) VALUES (1 , 1 , CURRENT_TIMESTAMP, ? , ?)'
+    const [bookingResult] = await db.query(sql , [userBookID , rideID]);
     return bookingResult
+}
+
+// DATEDIFF SQL = (SELECT TIMESTAMPDIFF(minute, CURRENT_TIMESTAMP , '2022-11-23 13:00:00' ) AS 'Minutes')
+
+// If you not payment in 15 Minutes your booking is cancel
+exports.notpayMent = async({tripID}) => {
+    const sql = "SELECT TIMESTAMPDIFF(minute, CURRENT_TIMESTAMP , user_have_trip.trpibooking_datetime) AS 'Minutes' FROM user_have_trip"
+    const [resultMinute] = await db.query(sql);
+    if(resultMinute.Minutes < 15) {
+        const sql = "UPDATE user_have_trip SET user_have_trip.trip_bookingstatus = 4 WHERE user_have_trip.trip_id = ? "
+        const [resultNotpayment] = await db.query(sql , [tripID]);
+        return resultNotpayment
+    }
+}
+
+// Update Payment Status and Booking Status
+exports.paymentStatus = async ({tripID}) => {
+    const sql = 'UPDATE user_have_trip SET user_have_trip.trip_bookingstatus = 2 , user_have_trip.trip_paymentstatus = 2 WHERE user_have_trip.trip_id = ?'
+    const [paymentResult] = await db.query(sql , [tripID]);
+    return paymentResult
+}
+
+// Update Booking Status to 3 is User confirm to booking Trip
+exports.confirmTrip = async ({choiceStatus , tripID}) => {
+    const sql = 'UPDATE user_have_trip SET user_have_trip.trip_bookingstatus = ? WHERE user_have_trip.trip_id = ?'
+    const [confirmResult] = await db.query(sql , [choiceStatus , tripID]);
+    return confirmResult
 }
 
 
