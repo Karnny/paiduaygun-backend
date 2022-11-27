@@ -22,7 +22,11 @@ const fileFilterHandler = (req, file, cb) => {
     if (isValidMimeType && isValidFileExtension) {
         return cb(null, true);
     } else {
-        cb("Error, this file type isn't allowed.");
+        cb({
+            responseCode: 400,
+            errorCode: "FILE_UPLOAD-FILE_TYPE_NOT_ALLOWED",
+            message: "Error, file type not allowed."
+        });
     }
 }
 
