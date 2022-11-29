@@ -50,7 +50,7 @@ exports.createUser = async ({
 
 
 exports.getUser = async ({ id , username}) => {
-    const sql = 'SELECT * FROM users WHERE users.user_id = ? , users.user_username = ?';
+    const sql = 'SELECT * FROM users WHERE users.user_id = ? OR users.user_username = ?';
     const [resultAllUser] = await db.query(sql , [id , username]);
     return resultAllUser;
 }
