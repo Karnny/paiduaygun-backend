@@ -22,7 +22,7 @@ api.post('/api/updateStatus' , useAuth([USER_ROLE.USER])  , catchError(rideContr
 api.post('/api/choiceStatus' , useAuth([USER_ROLE.USER])  , catchError(rideController.choiceStatus));
 
 // Get History Detail
-api.get('/api/historyBooking' , useAuth([USER_ROLE.USER]) , catchError(rideController.showHistoryBooking));
-api.get('/api/historyRiding' , useAuth([USER_ROLE.USER]) , catchError(rideController.showHistoryPost));
+api.get('/api/historyBooking' , catchError(rideController.showHistoryBooking));
+api.get('/api/historyRiding' , catchError(rideController.showHistoryPost));
 
 module.exports = api;
