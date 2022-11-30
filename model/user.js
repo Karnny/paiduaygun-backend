@@ -47,10 +47,14 @@ exports.createUser = async ({
     return createUserResult;
 }
 
-
-
 exports.getUser = async ({ id , username}) => {
     const sql = 'SELECT * FROM users WHERE users.user_id = ? OR users.user_username = ?';
     const [resultAllUser] = await db.query(sql , [id , username]);
     return resultAllUser;
+}
+
+exports.updatePostAmount = async ({userID}) => {
+    const sql = 'UPDATE users SET users.user_postamount = users.user_postamount + 1 WHERE users.user_id = ?'
+    const [resultUpdatePostAmount] = await db.query(sql , [userID]);
+    return resultUpdatePostAmount;
 }

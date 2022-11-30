@@ -76,7 +76,7 @@ exports.userSignin = async (req, res) => {
     }
 
     const payload = {
-        id: checkUser[0].users_id,
+        id: checkUser[0].user_id,
         username: checkUser[0].user_username,
         password: checkUser[0].user_password,
         firstname: checkUser[0].user_firstname,
